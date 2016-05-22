@@ -1,4 +1,50 @@
-var game = new Phaser.Game(1000, 1000+129, Phaser.AUTO, 'MemorialJumboDrum'/*, { preload: preload, create: create, update: update }*/);
+/* Selection options */
+var languageButton = [];
+var styleButton = [];
+var speedButton = [];
+var lookButton = [];
+var buttons = {'language':languageButton, 'style':styleButton, 'speed':speedButton, 'look':lookButton};      
+               // This is an array/dictionary of all arrays above
 
-game.state.add('selection', selectionState);
-game.state.add('jumbodrum', jumbodrumState);
+/* main part of the animation */
+var jumbodrumState = 
+{
+	preload: function() {
+		game.load.spritesheet('ButtonStyleSahmChaeKoreanSPRITE','buttons/ButtonStyleSahmChaeKoreanSPRITE.png',200,100);
+        game.load.image('jumbodrum', 'jumbodrum.png',2448,2448);
+    },
+    
+    create: function()
+	{
+		game.stage.backgroundColor = "#e5e1db"; // gray background color
+               
+        /* Adding all buttons */
+        //styleButton['SahmChae'] = game.add.button(300, 400, 'ButtonStyleSahmChaeKoreanSPRITE', function(){buttonSelected('style','ShamChae');}, this, 0, 1, 2);
+        
+        /* Adding all images */
+        var jumbodrumImage = game.add.image(2448,2448,'jumbodrum');
+        jumbodrumImage.crossOrigin = '';
+        //jumbodrumImage.scale.setTo(0.5,0.5);
+
+    },
+	
+	update: function()
+	{
+	
+	}
+	
+}
+
+function buttonSelected(type, selection) {
+    
+    var typeElements = Object.keys(buttons[type]);
+    
+    for (var i=0; i < typeElements.length; i++) {
+        if (buttons[type][typeElements[i]] = true) {
+            buttons[type][i] = false;
+            // MAKE THE BUTTON LOOK OFF TOO
+        }
+    }
+    
+    buttons[type][selection] = true; // i.e. buttons[language][English], buttons[speed][fast]    
+}

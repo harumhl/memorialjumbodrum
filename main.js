@@ -5,6 +5,7 @@ game.state.add('jumbodrum', jumbodrumState);
 
 game.state.start('jumbodrum'); // SHOULD BE 'SELECTION'
 
+/*
 window.onload = function() {
   var host = location.origin.replace(/^http/, 'ws')
   var ws = new WebSocket(host, 'echo-protocol');
@@ -14,3 +15,4 @@ window.onload = function() {
     document.querySelector('#pings').appendChild(li);
 };
 }
+*/

@@ -19,7 +19,7 @@ server.listen(port, function() {
 
 console.log("http server listening on %d", port)
 
-var wss = new WebSocketServer({httpServer: server, autoAcceptConnections: false});
+var wss = new WebSocketServer({server: server});
 console.log("websocket server created")
 
 process.on('SIGTERM', server.close.bind(server))

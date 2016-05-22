@@ -11,7 +11,7 @@ var jumbodrumState =
 {
 	preload: function() {
 		game.load.spritesheet('ButtonStyleSahmChaeKoreanSPRITE','buttons/ButtonStyleSahmChaeKoreanSPRITE.png',200,100);
-        game.load.image('jumbodrum', 'jumbodrum.png',2448,2448);
+        game.load.image('jumbodrum', 'https://raw.githubusercontent.com/harumhl/memorialjumbodrum/master/jumbodrum.png',2448,2448);
     },
     
     create: function()
@@ -22,9 +22,12 @@ var jumbodrumState =
         //styleButton['SahmChae'] = game.add.button(300, 400, 'ButtonStyleSahmChaeKoreanSPRITE', function(){buttonSelected('style','ShamChae');}, this, 0, 1, 2);
         
         /* Adding all images */
-        var jumbodrumImage = game.add.image(2448,2448,'jumbodrum');
+        /* var jumbodrumImage = game.add.image(2448,2448,'jumbodrum');
         jumbodrumImage.crossOrigin = '';
-        //jumbodrumImage.scale.setTo(0.5,0.5);
+        jumbodrumImage.scale.setTo(0.2,0.2); */
+        var image = new Image(); 
+        image.crossOrigin = 'Anonymous'; 
+        image.src = 'https://raw.githubusercontent.com/harumhl/memorialjumbodrum/master/jumbodrum.png';
 
     },
 	

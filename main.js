@@ -5,9 +5,9 @@ game.state.add('jumbodrum', jumbodrumState);
 
 game.state.start('jumbodrum'); // SHOULD BE 'SELECTION'
 
-window.onload = function {
+window.onload = function() {
   var host = location.origin.replace(/^http/, 'ws')
-  var ws = new WebSocket(host);
+  var ws = new WebSocket(host, 'echo-protocol');
   ws.onmessage = function (event) {
     var li = document.createElement('li');
     li.innerHTML = JSON.parse(event.data);

@@ -24,7 +24,7 @@ console.log("websocket server created")
 
 process.on('SIGTERM', server.close.bind(server))
 
-wss.on("request", function(ws) {
+wss.on("connection", function(ws) {
     var connection = request.accept('echo-protocol', request.origin);
     connections.push(connection);
 

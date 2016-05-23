@@ -6,7 +6,7 @@ var lookButton = [];
 var buttons = {'language':languageButton, 'style':styleButton, 'speed':speedButton, 'look':lookButton};   
                // This is an array/dictionary of all arrays above
 
-var execButton = [];
+var execButton = []; // play, pause, next, prev
 
 var keys = {};
 keys['H'] = {'side':'right', 'x_pos':370, 'y_pos':200, 'radius':100};
@@ -20,6 +20,7 @@ var keyHitSides = ['right', 'left'];
 var keyHit = {'right':undefined, 'left':undefined, 'rightOn':false, 'leftOn':false, 
               'rightRadius':0, 'leftRadius':0, 'rightDelay':0, 'leftDelay':0, 'rightX':0, 'leftX':0, 'rightY':0, 'leftY':0};
 
+var pauseText = ""; // transfer 'textInput' data to here when it's 'paused', temporarily (until played)
 var textInput = "";
 var timeStamp;
 
@@ -27,7 +28,8 @@ var repertoire = {};
 var repertoireInfo = {'type':"", 'pos':-1};
 repertoire['SahmChae']= {'1':"j-g-h-f-h-g-j-g-h-f-h-g-j-g-h-f-h-g-j-g-h-f-h-g-j-g-h-f-h-g-j-g-h-f-h-g-j-g-h-f-h-g-j-f-j-f-j-f-", '2':"hghg--hghg--j-g-u-g-u-g-hghg--hghg--j-g-u-g-u-g-", '3':"j-r-h-g-u-g-j-g-u-g-u-g-j-r-h-g-u-g-j-g-u-g-u-g-"};
 repertoire['Hwuimori'] = [];
-var currentRepertoireText;
+
+var textDisplay = [];
 
 /* main part of the animation */
 var jumbodrumState = 
@@ -37,6 +39,8 @@ var jumbodrumState =
         game.load.image('jumbodrum', 'jumbodrum.png',2448,2448);
         game.load.image('ButtonNext', 'buttons/ButtonNext.png');
         game.load.image('ButtonPrev', 'buttons/ButtonPrev.png');
+        game.load.image('ButtonPlay', 'buttons/ButtonPlay.png');
+        game.load.image('ButtonPause', 'buttons/ButtonPause.png');
     },
     
     create: function()
@@ -46,23 +50,35 @@ var jumbodrumState =
         /* Adding all buttons */
         //styleButton['SahmChae'] = game.add.button(300, 400, 'ButtonStyleSahmChaeKoreanSPRITE', function(){buttonSelected('style','ShamChae');}, this, 0, 1, 2);
         execButton['next'] = game.add.button(430, 550, 'ButtonNext', function(){execButtonPressed('next');}, this, 0, 1, 2);
-        execButton['next'].scale.setTo(0.3);
         execButton['prev'] = game.add.button(230, 550, 'ButtonPrev', function(){execButtonPressed('prev');}, this, 0, 1, 2);
+        execButton['play'] = game.add.button(330, 550, 'ButtonPlay', function(){execButtonPressed('play');}, this, 0, 1, 2);
+        execButton['pause'] = game.add.button(330, 550, 'ButtonPause', function(){execButtonPressed('pause');}, this, 0, 1, 2);
+        
+        execButton['next'].scale.setTo(0.3);
         execButton['prev'].scale.setTo(0.3);
+        execButton['play'].scale.setTo(0.3);
+        execButton['pause'].scale.setTo(0.3);
+        
+        execButton['pause'].kill();
         
         /* Adding all images */
         var jumbodrumImage = game.add.image(140,70,'jumbodrum');
         jumbodrumImage.crossOrigin = '';
         jumbodrumImage.scale.setTo(0.2,0.2);
+        
+        /* Adding all texts */
+        textDisplay['type'] = game.add.text(350,20, "SahmChae", { font: "25px Arial", fill: "#000000", align: "center" });
+        textDisplay['part'] = game.add.text(350,50, "part 1", { font: "15px Arial", fill: "#ff0044", align: "center" });
+
 
         /* Keyboard inputs */
-        // &#50557;weak
+        // weak
         game.input.keyboard.addKey(Phaser.Keyboard.H).onDown.add(function(){keyClicked('H');}, this);
         game.input.keyboard.addKey(Phaser.Keyboard.G).onDown.add(function(){keyClicked('G');}, this);
-        // &#44053;strong
+        // strong
         game.input.keyboard.addKey(Phaser.Keyboard.J).onDown.add(function(){keyClicked('J');}, this);
         game.input.keyboard.addKey(Phaser.Keyboard.F).onDown.add(function(){keyClicked('F');}, this);
-        // &#44033;side
+        // side
         game.input.keyboard.addKey(Phaser.Keyboard.U).onDown.add(function(){keyClicked('U');}, this);
         game.input.keyboard.addKey(Phaser.Keyboard.R).onDown.add(function(){keyClicked('R');}, this);
         
@@ -70,8 +86,6 @@ var jumbodrumState =
         
         repertoireInfo['type'] = 'SahmChae';
         repertoireInfo['pos'] = 0;
-
-        textInput = repertoire[ repertoireInfo['type'] ][ Object.keys(repertoire[repertoireInfo['type']])[repertoireInfo['pos']] ];
     },
 	
 	update: function()
@@ -171,6 +185,24 @@ function execButtonPressed(type) {
             repertoireInfo['pos']--;
 
         textInput = repertoire[ repertoireInfo['type'] ][ Object.keys(repertoire[repertoireInfo['type']])[repertoireInfo['pos']] ];
+    }
+    else if (type == 'pause') {
+        pauseText = textInput;
+        textInput = "";
+        
+        execButton['pause'].kill();
+        execButton['play'].reset(330,550);        
+    }
+    else if (type == 'play') {
+        textInput = pauseText;
+        pauseText = "";
+        
+        // TEMP TEMP TEMP TEMP TEMP
+        if (pauseText == "")
+            textInput = repertoire[ repertoireInfo['type'] ][ Object.keys(repertoire[repertoireInfo['type']])[repertoireInfo['pos']] ];
+        
+        execButton['play'].kill();
+        execButton['pause'].reset(330,550);        
     }
 }
 

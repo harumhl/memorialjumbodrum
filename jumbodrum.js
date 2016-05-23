@@ -6,25 +6,37 @@ var lookButton = [];
 var buttons = {'language':languageButton, 'style':styleButton, 'speed':speedButton, 'look':lookButton};   
                // This is an array/dictionary of all arrays above
 
-var Hclicked = {'side':'right', 'x_pos':370, 'radius':100};
-var Gclicked = {'side':'left',  'x_pos':170, 'radius':100};
-var Jclicked = {'side':'right', 'x_pos':370, 'radius':200};
-var Fclicked = {'side':'left',  'x_pos':170, 'radius':200};
-var keys = {'H':Hclicked, 'G':Gclicked, 'J':Jclicked, 'F':Fclicked};
+var execButton = [];
+
+var keys = {};
+keys['H'] = {'side':'right', 'x_pos':370, 'y_pos':200, 'radius':100};
+keys['G'] = {'side':'left',  'x_pos':170, 'y_pos':200, 'radius':100};
+keys['J'] = {'side':'right', 'x_pos':370, 'y_pos':200, 'radius':200};
+keys['F'] = {'side':'left',  'x_pos':170, 'y_pos':200, 'radius':200};
+keys['U'] = {'side':'right', 'x_pos':370, 'y_pos':80, 'radius':150};
+keys['R'] = {'side':'left',  'x_pos':170, 'y_pos':80, 'radius':150};
 
 var keyHitSides = ['right', 'left'];
 var keyHit = {'right':undefined, 'left':undefined, 'rightOn':false, 'leftOn':false, 
-              'rightRadius':0, 'leftRadius':0, 'rightDelay':0, 'leftDelay':0, 'rightX':0, 'leftX':0};
+              'rightRadius':0, 'leftRadius':0, 'rightDelay':0, 'leftDelay':0, 'rightX':0, 'leftX':0, 'rightY':0, 'leftY':0};
 
 var textInput = "";
 var timeStamp;
+
+var repertoire = {}; 
+var repertoireInfo = {'type':"", 'pos':-1};
+repertoire['SahmChae']= {'1':"j-g-h-f-h-g-j-g-h-f-h-g-j-g-h-f-h-g-j-g-h-f-h-g-j-g-h-f-h-g-j-g-h-f-h-g-j-g-h-f-h-g-j-f-j-f-j-f-", '2':"hghg--hghg--j-g-u-g-u-g-hghg--hghg--j-g-u-g-u-g-", '3':"j-r-h-g-u-g-j-g-u-g-u-g-j-r-h-g-u-g-j-g-u-g-u-g-"};
+repertoire['Hwuimori'] = [];
+var currentRepertoireText;
 
 /* main part of the animation */
 var jumbodrumState = 
 {
 	preload: function() {
 		game.load.spritesheet('ButtonStyleSahmChaeKoreanSPRITE','buttons/ButtonStyleSahmChaeKoreanSPRITE.png',200,100);
-        game.load.image('jumbodrum', 'https://raw.githubusercontent.com/harumhl/memorialjumbodrum/master/jumbodrum.png',2448,2448);
+        game.load.image('jumbodrum', 'jumbodrum.png',2448,2448);
+        game.load.image('ButtonNext', 'buttons/ButtonNext.png');
+        game.load.image('ButtonPrev', 'buttons/ButtonPrev.png');
     },
     
     create: function()
@@ -33,25 +45,33 @@ var jumbodrumState =
                
         /* Adding all buttons */
         //styleButton['SahmChae'] = game.add.button(300, 400, 'ButtonStyleSahmChaeKoreanSPRITE', function(){buttonSelected('style','ShamChae');}, this, 0, 1, 2);
+        execButton['next'] = game.add.button(430, 550, 'ButtonNext', function(){execButtonPressed('next');}, this, 0, 1, 2);
+        execButton['next'].scale.setTo(0.3);
+        execButton['prev'] = game.add.button(230, 550, 'ButtonPrev', function(){execButtonPressed('prev');}, this, 0, 1, 2);
+        execButton['prev'].scale.setTo(0.3);
         
         /* Adding all images */
-        /* var jumbodrumImage = game.add.image(2448,2448,'jumbodrum');
+        var jumbodrumImage = game.add.image(140,70,'jumbodrum');
         jumbodrumImage.crossOrigin = '';
-        jumbodrumImage.scale.setTo(0.2,0.2); */
-        var image = new Image(); 
-        image.crossOrigin = 'Anonymous'; 
-        image.src = 'https://raw.githubusercontent.com/harumhl/memorialjumbodrum/master/jumbodrum.png';
+        jumbodrumImage.scale.setTo(0.2,0.2);
 
         /* Keyboard inputs */
-        // 약weak
+        // &#50557;weak
         game.input.keyboard.addKey(Phaser.Keyboard.H).onDown.add(function(){keyClicked('H');}, this);
         game.input.keyboard.addKey(Phaser.Keyboard.G).onDown.add(function(){keyClicked('G');}, this);
-        // 강strong
+        // &#44053;strong
         game.input.keyboard.addKey(Phaser.Keyboard.J).onDown.add(function(){keyClicked('J');}, this);
         game.input.keyboard.addKey(Phaser.Keyboard.F).onDown.add(function(){keyClicked('F');}, this);
+        // &#44033;side
+        game.input.keyboard.addKey(Phaser.Keyboard.U).onDown.add(function(){keyClicked('U');}, this);
+        game.input.keyboard.addKey(Phaser.Keyboard.R).onDown.add(function(){keyClicked('R');}, this);
         
-        textInput = "j-g-h-f-h-g-";
         timeStamp = game.time.now;
+        
+        repertoireInfo['type'] = 'SahmChae';
+        repertoireInfo['pos'] = 0;
+
+        textInput = repertoire[ repertoireInfo['type'] ][ Object.keys(repertoire[repertoireInfo['type']])[repertoireInfo['pos']] ];
     },
 	
 	update: function()
@@ -74,7 +94,7 @@ var jumbodrumState =
                     keyHit[ keyHitSides[i] ].clear(); // If there is already a 'hit', then clear it out
                     keyHit[ keyHitSides[i] ].lineStyle(0);
                     keyHit[ keyHitSides[i] ].beginFill(0xFFFF00, 0.5);
-                    keyHit[ keyHitSides[i] ].drawCircle(keyHit[ keyHitSides[i]+'X' ], 200, 
+                    keyHit[ keyHitSides[i] ].drawCircle(keyHit[ keyHitSides[i]+'X' ], keyHit[ keyHitSides[i]+'Y' ], 
                                                         keyHit[ keyHitSides[i]+'Radius' ]);
                     keyHit[ keyHitSides[i] ].endFill();
 
@@ -118,7 +138,7 @@ function keyClicked(key) {
 
     // i.e. keyHit[ keys[key]['side'] ] == keyHit[left] or keyHit[right]
     
-    if (key == '-') return;
+    if (key == '-') return; // delay purposely
     
     // If there is already a 'hit', then clear it out
     if (keyHit[ keys[key]['side'] ] != undefined) 
@@ -127,13 +147,36 @@ function keyClicked(key) {
     keyHit[ keys[key]['side'] ] = game.add.graphics(100,100);
     keyHit[ keys[key]['side'] ].lineStyle(0);
     keyHit[ keys[key]['side'] ].beginFill(0x00FF00, 0.5);
-    keyHit[ keys[key]['side'] ].drawCircle(keys[key]['x_pos'], 200, keys[key]['radius']);
+    keyHit[ keys[key]['side'] ].drawCircle(keys[key]['x_pos'], keys[key]['y_pos'], keys[key]['radius']);
     keyHit[ keys[key]['side'] ].endFill();
     
     keyHit[ keys[key]['side']+'X' ] = keys[key]['x_pos'];
+    keyHit[ keys[key]['side']+'Y' ] = keys[key]['y_pos'];
     keyHit[ keys[key]['side']+'Radius' ] = keys[key]['radius'];
     keyHit[ keys[key]['side']+'On'] = true;
     keyHit[ keys[key]['side']+'Delay'] = 0;
 
     window.graphics = keyHit[ keys[key]['side'] ];
 }
+
+function execButtonPressed(type) {
+    if (type == 'next') {
+        if (repertoireInfo['pos'] < Object.keys(repertoire[repertoireInfo['type']]).length)
+            repertoireInfo['pos']++;
+
+        textInput = repertoire[ repertoireInfo['type'] ][ Object.keys(repertoire[repertoireInfo['type']])[repertoireInfo['pos']] ];
+    }
+    else if (type == 'prev') {
+        if (0 < repertoireInfo['pos'])
+            repertoireInfo['pos']--;
+
+        textInput = repertoire[ repertoireInfo['type'] ][ Object.keys(repertoire[repertoireInfo['type']])[repertoireInfo['pos']] ];
+    }
+}
+
+function createRectangle(x, y, w, h) {
+    var sprite = game.add.graphics(x, y);
+    sprite.beginFill(Phaser.Color.getRandomColor(100, 255), 1);
+    sprite.drawRect(0, 0, w, h);
+    return sprite;
+}		

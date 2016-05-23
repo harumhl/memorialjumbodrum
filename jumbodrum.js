@@ -41,6 +41,7 @@ var jumbodrumState =
         game.load.image('ButtonPrev', 'buttons/ButtonPrev.png');
         game.load.image('ButtonPlay', 'buttons/ButtonPlay.png');
         game.load.image('ButtonPause', 'buttons/ButtonPause.png');
+        game.load.image('ButtonRewindPart', 'buttons/ButtonRewindPart.png');
     },
     
     create: function()
@@ -53,11 +54,13 @@ var jumbodrumState =
         execButton['prev'] = game.add.button(230, 550, 'ButtonPrev', function(){execButtonPressed('prev');}, this, 0, 1, 2);
         execButton['play'] = game.add.button(330, 550, 'ButtonPlay', function(){execButtonPressed('play');}, this, 0, 1, 2);
         execButton['pause'] = game.add.button(330, 550, 'ButtonPause', function(){execButtonPressed('pause');}, this, 0, 1, 2);
+        execButton['rewindPart'] = game.add.button(330, 620, 'ButtonRewindPart', function(){execButtonPressed('rewindPart');}, this, 0, 1, 2); // start over the part
         
         execButton['next'].scale.setTo(0.3);
         execButton['prev'].scale.setTo(0.3);
         execButton['play'].scale.setTo(0.3);
         execButton['pause'].scale.setTo(0.3);
+        execButton['rewindPart'].scale.setTo(0.3);
         
         execButton['pause'].kill();
         
@@ -179,12 +182,20 @@ function execButtonPressed(type) {
             repertoireInfo['pos']++;
 
         textInput = repertoire[ repertoireInfo['type'] ][ Object.keys(repertoire[repertoireInfo['type']])[repertoireInfo['pos']] ];
+
+        if (execButton['play'] != undefined) 
+            execButton['play'].kill();
+        execButton['pause'].reset(330,550);        
     }
     else if (type == 'prev') {
         if (0 < repertoireInfo['pos'])
             repertoireInfo['pos']--;
 
         textInput = repertoire[ repertoireInfo['type'] ][ Object.keys(repertoire[repertoireInfo['type']])[repertoireInfo['pos']] ];
+        
+        if (execButton['play'] != undefined) 
+            execButton['play'].kill();
+        execButton['pause'].reset(330,550);        
     }
     else if (type == 'pause') {
         pauseText = textInput;
@@ -198,10 +209,17 @@ function execButtonPressed(type) {
         pauseText = "";
         
         // TEMP TEMP TEMP TEMP TEMP
-        if (pauseText == "")
+        if (textInput == "")
             textInput = repertoire[ repertoireInfo['type'] ][ Object.keys(repertoire[repertoireInfo['type']])[repertoireInfo['pos']] ];
         
         execButton['play'].kill();
+        execButton['pause'].reset(330,550);        
+    }
+    else if (type == 'rewindPart') {
+        textInput = repertoire[ repertoireInfo['type'] ][ Object.keys(repertoire[repertoireInfo['type']])[repertoireInfo['pos']] ];
+
+        if (execButton['play'] != undefined) 
+            execButton['play'].kill();
         execButton['pause'].reset(330,550);        
     }
 }

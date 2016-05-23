@@ -31,6 +31,10 @@ repertoire['Hwuimori'] = [];
 
 var textDisplay = [];
 
+// for speed
+var selection = {};
+var speed = 100; // halfway is 100% - normal speed
+
 /* main part of the animation */
 var jumbodrumState = 
 {
@@ -42,6 +46,10 @@ var jumbodrumState =
         game.load.image('ButtonPlay', 'buttons/ButtonPlay.png');
         game.load.image('ButtonPause', 'buttons/ButtonPause.png');
         game.load.image('ButtonRewindPart', 'buttons/ButtonRewindPart.png');
+        
+        game.load.image('selection_bar', 'buttons/selection_bar.png');
+        game.load.image('selection_button', 'buttons/selection_button.png');
+        game.load.image('selection_pressed', 'buttons/selection_pressed.png');
         
         game.load.spritesheet('ButtonSpeedSlowestKorean', 'buttons/ButtonSpeedSlowestKorean.png', 200, 100);
     },
@@ -66,7 +74,16 @@ var jumbodrumState =
         
         execButton['pause'].kill();
         
-        speedButton['slowest'] = game.add.button(0, 0, 'ButtonSpeedSlowestKorean', function(){buttonSelected('speed','slowest');}, this, 0, 1, 2);
+        //speedButton['slowest'] = game.add.button(0, 0, 'ButtonSpeedSlowestKorean', function(){buttonSelected('speed','slowest');}, this, 0, 1, 2);
+        
+        selection['bar'] = game.add.image(15,40,'selection_bar');
+        selection['button'] = game.add.button(selection['bar'].width/2+15, 35,'selection_button', speedChange, this, 0);
+        //selection['button'].scale.setTo(2);
+        //selection['pressed'] = game.add.button(200,200,'selection_button', function);
+        selection['button'].inputEnabled = true;
+        selection['button'].input.enableDrag();
+        selection['button'].input.boundsRect = new Phaser.Rectangle(selection['bar'].x, selection['button'].y, selection['bar'].width, selection['button'].height);
+        selection['button'].input.allowVerticalDrag = false;
         
         /* Adding all images */
         var jumbodrumImage = game.add.image(140,70,'jumbodrum');
@@ -76,6 +93,8 @@ var jumbodrumState =
         /* Adding all texts */
         textDisplay['type'] = game.add.text(310,20, "SahmChae", { font: "25px Arial", fill: "#000000", align: "center" });
         textDisplay['part'] = game.add.text(350,50, "part 1", { font: "15px Arial", fill: "#ff0044", align: "center" });
+        textDisplay['speed'] = game.add.text(80,70, "speed 100%", { font: "15px Arial", fill: "#ff0044", align: "center" });
+        
 
 
         /* Keyboard inputs */
@@ -130,7 +149,9 @@ var jumbodrumState =
         /* tokenize 'textInput' and display the 'hit's */ 
         if (textInput != "") {
         
-            if (timeStamp + 200 < game.time.now) { // every hit will be evenly spread out every 0.2 sec
+            if (timeStamp + (200*100/speed) < game.time.now) { 
+                // every hit will be evenly spread out every 0.2 sec
+                
                 timeStamp = game.time.now;
             
                 keyClicked( textInput.charAt(0).toUpperCase() );
@@ -239,9 +260,16 @@ function execButtonPressed(type) {
     }
 }
 
+function speedChange() {
+    
+    speed = ((selection['button'].x-selection['bar'].x) / selection['bar'].width) * 200;
+    speed = speed.toFixed(2);
+    textDisplay['speed'].setText("speed "+speed+"%");
+}
+
 function createRectangle(x, y, w, h) {
     var sprite = game.add.graphics(x, y);
     sprite.beginFill(Phaser.Color.getRandomColor(100, 255), 1);
     sprite.drawRect(0, 0, w, h);
     return sprite;
-}		
+}

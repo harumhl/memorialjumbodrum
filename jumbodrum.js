@@ -35,13 +35,15 @@ var textDisplay = [];
 var jumbodrumState = 
 {
 	preload: function() {
-		game.load.spritesheet('ButtonStyleSahmChaeKoreanSPRITE','buttons/ButtonStyleSahmChaeKoreanSPRITE.png',200,100);
-        game.load.image('jumbodrum', 'jumbodrum.png',2448,2448);
+
+        game.load.image('jumbodrum', 'jumbodrum.png', 2448, 2448);
         game.load.image('ButtonNext', 'buttons/ButtonNext.png');
         game.load.image('ButtonPrev', 'buttons/ButtonPrev.png');
         game.load.image('ButtonPlay', 'buttons/ButtonPlay.png');
         game.load.image('ButtonPause', 'buttons/ButtonPause.png');
         game.load.image('ButtonRewindPart', 'buttons/ButtonRewindPart.png');
+        
+        game.load.spritesheet('ButtonSpeedSlowestKorean', 'buttons/ButtonSpeedSlowestKorean.png', 200, 100);
     },
     
     create: function()
@@ -50,11 +52,11 @@ var jumbodrumState =
                
         /* Adding all buttons */
         //styleButton['SahmChae'] = game.add.button(300, 400, 'ButtonStyleSahmChaeKoreanSPRITE', function(){buttonSelected('style','ShamChae');}, this, 0, 1, 2);
-        execButton['next'] = game.add.button(430, 550, 'ButtonNext', function(){execButtonPressed('next');}, this, 0, 1, 2);
-        execButton['prev'] = game.add.button(230, 550, 'ButtonPrev', function(){execButtonPressed('prev');}, this, 0, 1, 2);
-        execButton['play'] = game.add.button(330, 550, 'ButtonPlay', function(){execButtonPressed('play');}, this, 0, 1, 2);
-        execButton['pause'] = game.add.button(330, 550, 'ButtonPause', function(){execButtonPressed('pause');}, this, 0, 1, 2);
-        execButton['rewindPart'] = game.add.button(330, 620, 'ButtonRewindPart', function(){execButtonPressed('rewindPart');}, this, 0, 1, 2); // start over the part
+        execButton['next'] = game.add.button(480, 550, 'ButtonNext', function(){execButtonPressed('next');}, this, 0, 1, 2);
+        execButton['prev'] = game.add.button(180, 550, 'ButtonPrev', function(){execButtonPressed('prev');}, this, 0, 1, 2);
+        execButton['play'] = game.add.button(280, 550, 'ButtonPlay', function(){execButtonPressed('play');}, this, 0, 1, 2);
+        execButton['pause'] = game.add.button(280, 550, 'ButtonPause', function(){execButtonPressed('pause');}, this, 0, 1, 2);
+        execButton['rewindPart'] = game.add.button(380, 550, 'ButtonRewindPart', function(){execButtonPressed('rewindPart');}, this, 0, 1, 2); // start over the part
         
         execButton['next'].scale.setTo(0.3);
         execButton['prev'].scale.setTo(0.3);
@@ -64,13 +66,15 @@ var jumbodrumState =
         
         execButton['pause'].kill();
         
+        speedButton['slowest'] = game.add.button(0, 0, 'ButtonSpeedSlowestKorean', function(){buttonSelected('speed','slowest');}, this, 0, 1, 2);
+        
         /* Adding all images */
         var jumbodrumImage = game.add.image(140,70,'jumbodrum');
         jumbodrumImage.crossOrigin = '';
         jumbodrumImage.scale.setTo(0.2,0.2);
         
         /* Adding all texts */
-        textDisplay['type'] = game.add.text(350,20, "SahmChae", { font: "25px Arial", fill: "#000000", align: "center" });
+        textDisplay['type'] = game.add.text(310,20, "SahmChae", { font: "25px Arial", fill: "#000000", align: "center" });
         textDisplay['part'] = game.add.text(350,50, "part 1", { font: "15px Arial", fill: "#ff0044", align: "center" });
 
 
@@ -134,10 +138,17 @@ var jumbodrumState =
                 textInput = textInput.substring(1); // get rid of char at 0
             }
         }
+        else { // textInput == "", thus it ran the whole thing
+            if (execButton['pause'] != undefined) 
+                execButton['pause'].kill();
+            execButton['play'].reset(280,550);        
+
+        }
 	}	
 }
 
 function buttonSelected(type, selection) {
+    console.log("button clicked " +type +"-" +selection);
     
     var typeElements = Object.keys(buttons[type]);
     
@@ -179,36 +190,34 @@ function keyClicked(key) {
 function execButtonPressed(type) {
     if (type == 'next') {
         if (repertoireInfo['pos'] < Object.keys(repertoire[repertoireInfo['type']]).length-1)
-            repertoireInfo['pos']++;
+            repertoireInfo['pos']++; // go get next one unless this is the last one
 
         textInput = repertoire[ repertoireInfo['type'] ][ Object.keys(repertoire[repertoireInfo['type']])[repertoireInfo['pos']] ];
         
-        console.log("pos at "+repertoireInfo['pos'] +" and repertoire "+textInput);
         textDisplay['part'].setText("part "+(repertoireInfo['pos']+1));
 
         if (execButton['play'] != undefined) 
             execButton['play'].kill();
-        execButton['pause'].reset(330,550);        
+        execButton['pause'].reset(280,550);        
     }
     else if (type == 'prev') {
-        if (0 < repertoireInfo['pos'])
+        if (0 < repertoireInfo['pos']) // go get previous one unless it's already the first one
             repertoireInfo['pos']--;
 
         textInput = repertoire[ repertoireInfo['type'] ][ Object.keys(repertoire[repertoireInfo['type']])[repertoireInfo['pos']] ];
         
-        console.log("pos at "+repertoireInfo['pos'] +" and repertoire "+textInput);
         textDisplay['part'].setText("part "+(repertoireInfo['pos']+1));
         
         if (execButton['play'] != undefined) 
             execButton['play'].kill();
-        execButton['pause'].reset(330,550);        
+        execButton['pause'].reset(280,550);        
     }
     else if (type == 'pause') {
         pauseText = textInput;
         textInput = "";
         
         execButton['pause'].kill();
-        execButton['play'].reset(330,550);        
+        execButton['play'].reset(280,550);        
     }
     else if (type == 'play') {
         textInput = pauseText;
@@ -219,14 +228,14 @@ function execButtonPressed(type) {
             textInput = repertoire[ repertoireInfo['type'] ][ Object.keys(repertoire[repertoireInfo['type']])[repertoireInfo['pos']] ];
         
         execButton['play'].kill();
-        execButton['pause'].reset(330,550);        
+        execButton['pause'].reset(280,550);        
     }
     else if (type == 'rewindPart') {
         textInput = repertoire[ repertoireInfo['type'] ][ Object.keys(repertoire[repertoireInfo['type']])[repertoireInfo['pos']] ];
 
         if (execButton['play'] != undefined) 
             execButton['play'].kill();
-        execButton['pause'].reset(330,550);        
+        execButton['pause'].reset(280,550);        
     }
 }
 

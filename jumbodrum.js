@@ -178,10 +178,13 @@ function keyClicked(key) {
 
 function execButtonPressed(type) {
     if (type == 'next') {
-        if (repertoireInfo['pos'] < Object.keys(repertoire[repertoireInfo['type']]).length)
+        if (repertoireInfo['pos'] < Object.keys(repertoire[repertoireInfo['type']]).length-1)
             repertoireInfo['pos']++;
 
         textInput = repertoire[ repertoireInfo['type'] ][ Object.keys(repertoire[repertoireInfo['type']])[repertoireInfo['pos']] ];
+        
+        console.log("pos at "+repertoireInfo['pos'] +" and repertoire "+textInput);
+        textDisplay['part'].setText("part "+(repertoireInfo['pos']+1));
 
         if (execButton['play'] != undefined) 
             execButton['play'].kill();
@@ -192,6 +195,9 @@ function execButtonPressed(type) {
             repertoireInfo['pos']--;
 
         textInput = repertoire[ repertoireInfo['type'] ][ Object.keys(repertoire[repertoireInfo['type']])[repertoireInfo['pos']] ];
+        
+        console.log("pos at "+repertoireInfo['pos'] +" and repertoire "+textInput);
+        textDisplay['part'].setText("part "+(repertoireInfo['pos']+1));
         
         if (execButton['play'] != undefined) 
             execButton['play'].kill();

@@ -3,28 +3,28 @@ var languageButton = [];
 var styleButton = [];
 var speedButton = [];
 var lookButton = [];
-var buttons = {'language':languageButton, 'style':styleButton, 'speed':speedButton, 'look':lookButton};   
-               // This is an array/dictionary of all arrays above
+var buttons = {'language':languageButton, 'style':styleButton, 'speed':speedButton, 'look':lookButton};
+// This is an array/dictionary of all arrays above
 
 var execButton = []; // play, pause, next, prev
 
 var keys = {};
-keys['H'] = {'side':'right', 'x_pos':370, 'y_pos':200, 'radius':100};
-keys['G'] = {'side':'left',  'x_pos':170, 'y_pos':200, 'radius':100};
-keys['J'] = {'side':'right', 'x_pos':370, 'y_pos':200, 'radius':200};
-keys['F'] = {'side':'left',  'x_pos':170, 'y_pos':200, 'radius':200};
-keys['U'] = {'side':'right', 'x_pos':370, 'y_pos':80, 'radius':150};
-keys['R'] = {'side':'left',  'x_pos':170, 'y_pos':80, 'radius':150};
+keys['H'] = {'side':'right', 'x_pos':370, 'y_pos':200, 'radius':100, 'type':'weak'};
+keys['G'] = {'side':'left',  'x_pos':170, 'y_pos':200, 'radius':100, 'type':'weak'};
+keys['J'] = {'side':'right', 'x_pos':370, 'y_pos':200, 'radius':200, 'type':'strong'};
+keys['F'] = {'side':'left',  'x_pos':170, 'y_pos':200, 'radius':200, 'type':'strong'};
+keys['U'] = {'side':'right', 'x_pos':370, 'y_pos':80, 'radius':150, 'type':'side'};
+keys['R'] = {'side':'left',  'x_pos':170, 'y_pos':80, 'radius':150, 'type':'side'};
 
 var keyHitSides = ['right', 'left'];
-var keyHit = {'right':undefined, 'left':undefined, 'rightOn':false, 'leftOn':false, 
-              'rightRadius':0, 'leftRadius':0, 'rightDelay':0, 'leftDelay':0, 'rightX':0, 'leftX':0, 'rightY':0, 'leftY':0};
+var keyHit = {'right':undefined, 'left':undefined, 'rightOn':false, 'leftOn':false,
+    'rightRadius':0, 'leftRadius':0, 'rightDelay':0, 'leftDelay':0, 'rightX':0, 'leftX':0, 'rightY':0, 'leftY':0};
 
 var pauseText = ""; // transfer 'textInput' data to here when it's 'paused', temporarily (until played)
 var textInput = "";
 var timeStamp;
 
-var repertoire = {}; 
+var repertoire = {};
 var repertoireInfo = {'type':"", 'pos':-1};
 repertoire['SahmChae']= {'1':"j-g-h-f-h-g-j-g-h-f-h-g-j-g-h-f-h-g-j-g-h-f-h-g-j-g-h-f-h-g-j-g-h-f-h-g-j-g-h-f-h-g-j-f-j-f-j-f-", '2':"hghg--hghg--j-g-u-g-u-g-hghg--hghg--j-g-u-g-u-g-", '3':"j-r-h-g-u-g-j-g-u-g-u-g-j-r-h-g-u-g-j-g-u-g-u-g-"};
 repertoire['Hwuimori'] = [];
@@ -35,29 +35,34 @@ var textDisplay = [];
 var selection = {};
 var speed = 100; // halfway is 100% - normal speed
 
-/* main part of the animation */
-var jumbodrumState = 
-{
-	preload: function() {
+var sound = {};
 
-        game.load.image('jumbodrum', 'jumbodrum.png', 2448, 2448);
-        game.load.image('ButtonNext', 'buttons/ButtonNext.png');
-        game.load.image('ButtonPrev', 'buttons/ButtonPrev.png');
-        game.load.image('ButtonPlay', 'buttons/ButtonPlay.png');
-        game.load.image('ButtonPause', 'buttons/ButtonPause.png');
-        game.load.image('ButtonRewindPart', 'buttons/ButtonRewindPart.png');
-        
-        game.load.image('selection_bar', 'buttons/selection_bar.png');
-        game.load.image('selection_button', 'buttons/selection_button.png');
-        game.load.image('selection_pressed', 'buttons/selection_pressed.png');
-        
-        game.load.spritesheet('ButtonSpeedSlowestKorean', 'buttons/ButtonSpeedSlowestKorean.png', 200, 100);
-    },
+/* main part of the animation */
+var jumbodrumState =
+{
+preload: function() {
     
-    create: function()
-	{
-		game.stage.backgroundColor = "#e5e1db"; // gray background color
-               
+    game.load.image('jumbodrum', 'jumbodrum.png', 2448, 2448);
+    game.load.image('ButtonNext', 'buttons/ButtonNext.png');
+    game.load.image('ButtonPrev', 'buttons/ButtonPrev.png');
+    game.load.image('ButtonPlay', 'buttons/ButtonPlay.png');
+    game.load.image('ButtonPause', 'buttons/ButtonPause.png');
+    game.load.image('ButtonRewindPart', 'buttons/ButtonRewindPart.png');
+    
+    game.load.image('selection_bar', 'buttons/selection_bar.png');
+    game.load.image('selection_button', 'buttons/selection_button.png');
+    game.load.image('selection_pressed', 'buttons/selection_pressed.png');
+    
+    game.load.spritesheet('ButtonSpeedSlowestKorean', 'buttons/ButtonSpeedSlowestKorean.png', 200, 100);
+    
+    game.load.audio('SoundStrong', 'SoundStrong.mp3');
+    game.load.audio('SoundWeak', 'SoundWeak.mp3');
+    game.load.audio('SoundSide', 'SoundSide.mp3');    },
+    
+create: function()
+    {
+        game.stage.backgroundColor = "#e5e1db"; // gray background color
+        
         /* Adding all buttons */
         //styleButton['SahmChae'] = game.add.button(300, 400, 'ButtonStyleSahmChaeKoreanSPRITE', function(){buttonSelected('style','ShamChae');}, this, 0, 1, 2);
         execButton['next'] = game.add.button(480, 550, 'ButtonNext', function(){execButtonPressed('next');}, this, 0, 1, 2);
@@ -93,10 +98,13 @@ var jumbodrumState =
         /* Adding all texts */
         textDisplay['type'] = game.add.text(310,20, "SahmChae", { font: "25px Arial", fill: "#000000", align: "center" });
         textDisplay['part'] = game.add.text(350,50, "part 1", { font: "15px Arial", fill: "#ff0044", align: "center" });
-        textDisplay['speed'] = game.add.text(80,70, "speed 100%", { font: "15px Arial", fill: "#ff0044", align: "center" });
+        textDisplay['speed'] = game.add.text(80,70, "speed 100%", { font: "15px Arial", fill: "#0000ff", align: "center" });
         
-
-
+        /* Adding all sounds */
+        sound['strong'] = game.add.audio('SoundStrong');
+        sound['weak'] = game.add.audio('SoundWeak');
+        sound['side'] = game.add.audio('SoundSide');
+        
         /* Keyboard inputs */
         // weak
         game.input.keyboard.addKey(Phaser.Keyboard.H).onDown.add(function(){keyClicked('H');}, this);
@@ -113,32 +121,32 @@ var jumbodrumState =
         repertoireInfo['type'] = 'SahmChae';
         repertoireInfo['pos'] = 0;
     },
-	
-	update: function()
-	{
-        /* keyboard clicked - gradually reduce */        
+    
+update: function()
+    {
+        /* keyboard clicked - gradually reduce */
         for (var i=0; i < keyHitSides.length; i++) { // 'right' first, then 'left'
             
             if (keyHit[ keyHitSides[i]+'On' ] == true) {
                 
-                if (keyHit[ keyHitSides[i]+'Delay' ] < 20) { 
+                if (keyHit[ keyHitSides[i]+'Delay' ] < 20) {
                     // show the 'impact' for a little while, before start reducing the size
                     keyHit[ keyHitSides[i]+'Delay' ]++;
                 }
                 else {
                     keyHit[ keyHitSides[i]+'Radius' ] -= 20; // reduce the circle size
-
-                    if (keyHit[ keyHitSides[i] ] == undefined) 
+                    
+                    if (keyHit[ keyHitSides[i] ] == undefined)
                         keyHit[ keyHitSides[i] ] = game.add.graphics(100,100);
-                        
+                    
                     keyHit[ keyHitSides[i] ].clear(); // If there is already a 'hit', then clear it out
                     keyHit[ keyHitSides[i] ].lineStyle(0);
                     keyHit[ keyHitSides[i] ].beginFill(0xFFFF00, 0.5);
-                    keyHit[ keyHitSides[i] ].drawCircle(keyHit[ keyHitSides[i]+'X' ], keyHit[ keyHitSides[i]+'Y' ], 
+                    keyHit[ keyHitSides[i] ].drawCircle(keyHit[ keyHitSides[i]+'X' ], keyHit[ keyHitSides[i]+'Y' ],
                                                         keyHit[ keyHitSides[i]+'Radius' ]);
                     keyHit[ keyHitSides[i] ].endFill();
-
-                    if (keyHit[ keyHitSides[i]+'Radius' ] <= 0) 
+                    
+                    if (keyHit[ keyHitSides[i]+'Radius' ] <= 0)
                         keyHit[ keyHitSides[i]+'On' ] = false;
                     
                     window.graphics = keyHit[ keyHitSides[i] ];
@@ -146,26 +154,26 @@ var jumbodrumState =
             }
         }
         
-        /* tokenize 'textInput' and display the 'hit's */ 
+        /* tokenize 'textInput' and display the 'hit's */
         if (textInput != "") {
-        
-            if (timeStamp + (200*100/speed) < game.time.now) { 
+            
+            if (timeStamp + (200*100/speed) < game.time.now) {
                 // every hit will be evenly spread out every 0.2 sec
                 
                 timeStamp = game.time.now;
-            
+                
                 keyClicked( textInput.charAt(0).toUpperCase() );
-
+                
                 textInput = textInput.substring(1); // get rid of char at 0
             }
         }
         else { // textInput == "", thus it ran the whole thing
-            if (execButton['pause'] != undefined) 
+            if (execButton['pause'] != undefined)
                 execButton['pause'].kill();
-            execButton['play'].reset(280,550);        
-
+            execButton['play'].reset(280,550);
+            
         }
-	}	
+    }
 }
 
 function buttonSelected(type, selection) {
@@ -180,17 +188,17 @@ function buttonSelected(type, selection) {
         }
     }
     
-    buttons[type][selection] = true; // i.e. buttons[language][English], buttons[speed][fast]    
+    buttons[type][selection] = true; // i.e. buttons[language][English], buttons[speed][fast]
 }
 
 function keyClicked(key) {
-
+    
     // i.e. keyHit[ keys[key]['side'] ] == keyHit[left] or keyHit[right]
     
     if (key == '-') return; // delay purposely
     
     // If there is already a 'hit', then clear it out
-    if (keyHit[ keys[key]['side'] ] != undefined) 
+    if (keyHit[ keys[key]['side'] ] != undefined)
         keyHit[ keys[key]['side'] ].clear();
     
     keyHit[ keys[key]['side'] ] = game.add.graphics(100,100);
@@ -204,41 +212,43 @@ function keyClicked(key) {
     keyHit[ keys[key]['side']+'Radius' ] = keys[key]['radius'];
     keyHit[ keys[key]['side']+'On'] = true;
     keyHit[ keys[key]['side']+'Delay'] = 0;
-
+    
     window.graphics = keyHit[ keys[key]['side'] ];
+    
+    sound[ keys[key]['type'] ].play();
 }
 
 function execButtonPressed(type) {
     if (type == 'next') {
         if (repertoireInfo['pos'] < Object.keys(repertoire[repertoireInfo['type']]).length-1)
             repertoireInfo['pos']++; // go get next one unless this is the last one
-
+        
         textInput = repertoire[ repertoireInfo['type'] ][ Object.keys(repertoire[repertoireInfo['type']])[repertoireInfo['pos']] ];
         
         textDisplay['part'].setText("part "+(repertoireInfo['pos']+1));
-
-        if (execButton['play'] != undefined) 
+        
+        if (execButton['play'] != undefined)
             execButton['play'].kill();
-        execButton['pause'].reset(280,550);        
+        execButton['pause'].reset(280,550);
     }
     else if (type == 'prev') {
         if (0 < repertoireInfo['pos']) // go get previous one unless it's already the first one
             repertoireInfo['pos']--;
-
+        
         textInput = repertoire[ repertoireInfo['type'] ][ Object.keys(repertoire[repertoireInfo['type']])[repertoireInfo['pos']] ];
         
         textDisplay['part'].setText("part "+(repertoireInfo['pos']+1));
         
-        if (execButton['play'] != undefined) 
+        if (execButton['play'] != undefined)
             execButton['play'].kill();
-        execButton['pause'].reset(280,550);        
+        execButton['pause'].reset(280,550);
     }
     else if (type == 'pause') {
         pauseText = textInput;
         textInput = "";
         
         execButton['pause'].kill();
-        execButton['play'].reset(280,550);        
+        execButton['play'].reset(280,550);
     }
     else if (type == 'play') {
         textInput = pauseText;
@@ -249,14 +259,14 @@ function execButtonPressed(type) {
             textInput = repertoire[ repertoireInfo['type'] ][ Object.keys(repertoire[repertoireInfo['type']])[repertoireInfo['pos']] ];
         
         execButton['play'].kill();
-        execButton['pause'].reset(280,550);        
+        execButton['pause'].reset(280,550);
     }
     else if (type == 'rewindPart') {
         textInput = repertoire[ repertoireInfo['type'] ][ Object.keys(repertoire[repertoireInfo['type']])[repertoireInfo['pos']] ];
-
-        if (execButton['play'] != undefined) 
+        
+        if (execButton['play'] != undefined)
             execButton['play'].kill();
-        execButton['pause'].reset(280,550);        
+        execButton['pause'].reset(280,550);
     }
 }
 

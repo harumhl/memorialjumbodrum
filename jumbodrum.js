@@ -25,7 +25,7 @@ var textInput = "";
 
 var repertoire = {};
 var repertoireInfo = {'type':"", 'pos':-1};
-repertoire['SahmChae']= {'1':"j-g-h-f-h-g-j-g-h-f-h-g-j-g-h-f-h-g-j-g-h-f-h-g-j-g-h-f-h-g-j-g-h-f-h-g-j-g-h-f-h-g-j-f-j-f-j-f-", '2':"hghg--hghg--j-g-u-g-u-g-hghg--hghg--j-g-u-g-u-g-", '3':"j-r-h-g-u-g-j-g-u-g-u-g-j-r-h-g-u-g-j-g-u-g-u-g-"};
+repertoire['SahmChae']= {'1':"j--g--h--f--h--g--j--g--h--f--h--g--j--g--h--f--h--g--j--g--h--f--h--g--j--g--h--f--h--g--j--g--h--f--h--g--j--g--h--f--h--g--j--f--j--f--j--f--", '2':"h-g-h-g---h-g-h-g---j--g--u---g--u---g--h-g-h-g-----h-g-h-g-----j--g--u---g--u---g--", '3':"j--r---h--g--u---g--j--g--u---g--u---g--j--r---h--g--u---g--j--g--u---g--u---g--"};
 repertoire['Hwuimori'] = [];
 
 var textDisplay = [];
@@ -119,7 +119,7 @@ create: function()
         repertoireInfo['pos'] = 0;
         
         /* tokenize 'textInput' and display the 'hit's */
-        window.setTimeout(play, 20000/speed); // play() calls another setTimeout, so it's like setInterval but with changing time
+        window.setTimeout(play, 10000/speed); // play() calls another setTimeout, so it's like setInterval but with changing time
     },
     
 update: function()
@@ -167,7 +167,7 @@ function play() {
             execButton['pause'].kill();
         execButton['play'].reset(280,550);
     }
-    window.setTimeout(play, 20000/speed);
+    window.setTimeout(play, 10000/speed);
 }
 
 function buttonSelected(type, selection) {

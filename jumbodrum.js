@@ -22,7 +22,6 @@ var keyHit = {'right':undefined, 'left':undefined, 'rightOn':false, 'leftOn':fal
 
 var pauseText = ""; // transfer 'textInput' data to here when it's 'paused', temporarily (until played)
 var textInput = "";
-var timeStamp;
 
 var repertoire = {};
 var repertoireInfo = {'type':"", 'pos':-1};
@@ -116,10 +115,11 @@ create: function()
         game.input.keyboard.addKey(Phaser.Keyboard.U).onDown.add(function(){keyClicked('U');}, this);
         game.input.keyboard.addKey(Phaser.Keyboard.R).onDown.add(function(){keyClicked('R');}, this);
         
-        timeStamp = game.time.now;
-        
         repertoireInfo['type'] = 'SahmChae';
         repertoireInfo['pos'] = 0;
+        
+        /* tokenize 'textInput' and display the 'hit's */
+        window.setTimeout(play, 20000/speed); // play() calls another setTimeout, so it's like setInterval but with changing time
     },
     
 update: function()
@@ -153,27 +153,21 @@ update: function()
                 }
             }
         }
-        
-        /* tokenize 'textInput' and display the 'hit's */
-        if (textInput != "") {
-            
-            if (timeStamp + (200*100/speed) < game.time.now) {
-                // every hit will be evenly spread out every 0.2 sec
-                
-                timeStamp = game.time.now;
-                
-                keyClicked( textInput.charAt(0).toUpperCase() );
-                
-                textInput = textInput.substring(1); // get rid of char at 0
-            }
-        }
-        else { // textInput == "", thus it ran the whole thing
-            if (execButton['pause'] != undefined)
-                execButton['pause'].kill();
-            execButton['play'].reset(280,550);
-            
-        }
     }
+}
+function play() {
+    if (textInput != "") {
+        
+        keyClicked( textInput.charAt(0).toUpperCase() );
+        
+        textInput = textInput.substring(1); // get rid of char at 0
+    }
+    else { // textInput == "", thus it ran the whole thing
+        if (execButton['pause'] != undefined)
+            execButton['pause'].kill();
+        execButton['play'].reset(280,550);
+    }
+    window.setTimeout(play, 20000/speed);
 }
 
 function buttonSelected(type, selection) {

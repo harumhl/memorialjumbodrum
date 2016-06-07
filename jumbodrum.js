@@ -25,10 +25,11 @@ var textInput = "";
 
 var repertoire = {};
 var repertoireInfo = {'type':"", 'pos':-1};
-repertoire['SahmChae']= {'1':"j--g--h--f--h--g--j--g--h--f--h--g--j--g--h--f--h--g--j--g--h--f--h--g--j--g--h--f--h--g--j--g--h--f--h--g--j--g--h--f--h--g--j--f--j--f--j--f--", '2':"h-g-h-g---h-g-h-g---j--g--u---g--u---g--h-g-h-g-----h-g-h-g-----j--g--u---g--u---g--", '3':"j--r---h--g--u---g--j--g--u---g--u---g--j--r---h--g--u---g--j--g--u---g--u---g--"};
+repertoire['SahmChae']= {'1':"j--g--h--f--h--g--j--g--h--f--h--g--j--g--h--f--h--g--j--g--h--f--h--g--j--g--h--f--h--g--j--g--h--f--h--g--j--g--h--f--h--g--j--f--j--f--j--f--", '2':"h-g-h-g-----h-g-h-g-----j--g--u--g--u--g--h-g-h-g-----h-g-h-g-----j--g--u--g--u--g--", '3':"j--r--h--g--u--g--j--g--u--g--u--g--j--r--h--g--u--g--j--g--u--g--u--g--", "4":"j--r--h--g--u--g--j--r--h--g--u--g--j--r--h--g--u--g--j--r--u--r--u--r--", "5":"u-r-u-r-----h-g-h-g-----j--g--u--g--u--g--h-g-h-g-----u-r-u-r-----j--g--u--g--u--g--", "6":"u-r-u-r-----h-g-h-g-----h-g-h-g-----u-r-u-r-----u-r-u-r-----u-r-u-r-----u--r--h--g--u--r--", "7":"j--g--h--g--h--g--h--g--h--g--h--g--j--g--h--g--h--g--h--g--h--g--h--g--j--g--h--g--h--g--h--g--h--g--h--g--j--g--h--g--h--g--h--g--h--g--h--g--", "8":"j--g--h--g--h--g--j--g--h--g--h--g--j--g--h--g--h--g--j--g--h--g--h--g--j--g--h--g--h--g--j--g--h--g--h--g--j--g--h--g--h--g--j--g--h--g--h--g--", "9":"j--g--h--f--h--g--j--g--h--f--h--g--j--g--h--f--h--g--j--g--h--f--h--g--j--g--h--f--h--g--j--g--h--f--h--g--j--g--h--f--h--g--j--f--j--f--j--f--"};
 repertoire['Hwuimori'] = [];
 
 var textDisplay = [];
+var autoplayOn = false;
 
 // for speed
 var selection = {};
@@ -47,6 +48,7 @@ preload: function() {
     game.load.image('ButtonPlay', 'buttons/ButtonPlay.png');
     game.load.image('ButtonPause', 'buttons/ButtonPause.png');
     game.load.image('ButtonRewindPart', 'buttons/ButtonRewindPart.png');
+    game.load.image('ButtonAutoPlay', 'buttons/ButtonAutoPlay.png');
     
     game.load.image('selection_bar', 'buttons/selection_bar.png');
     game.load.image('selection_button', 'buttons/selection_button.png');
@@ -69,12 +71,14 @@ create: function()
         execButton['play'] = game.add.button(280, 550, 'ButtonPlay', function(){execButtonPressed('play');}, this, 0, 1, 2);
         execButton['pause'] = game.add.button(280, 550, 'ButtonPause', function(){execButtonPressed('pause');}, this, 0, 1, 2);
         execButton['rewindPart'] = game.add.button(380, 550, 'ButtonRewindPart', function(){execButtonPressed('rewindPart');}, this, 0, 1, 2); // start over the part
+        execButton['autoplay'] = game.add.button(580, 550, 'ButtonAutoPlay', function(){execButtonPressed('autoplay');}, this, 0, 1, 2); // autoplay from beginning to end
         
         execButton['next'].scale.setTo(0.3);
         execButton['prev'].scale.setTo(0.3);
         execButton['play'].scale.setTo(0.3);
         execButton['pause'].scale.setTo(0.3);
         execButton['rewindPart'].scale.setTo(0.3);
+        execButton['autoplay'].scale.setTo(0.3);
         
         execButton['pause'].kill();
         
@@ -98,6 +102,7 @@ create: function()
         textDisplay['type'] = game.add.text(310,20, "SahmChae", { font: "25px Arial", fill: "#000000", align: "center" });
         textDisplay['part'] = game.add.text(350,50, "part 1", { font: "15px Arial", fill: "#ff0044", align: "center" });
         textDisplay['speed'] = game.add.text(80,70, "speed 100%", { font: "15px Arial", fill: "#0000ff", align: "center" });
+        textDisplay['autoplayOn'] = game.add.text(580, 520, "autoplay: off", { font: "15px Arial", fill: "#0000ff", align: "center" });
         
         /* Adding all sounds */
         sound['strong'] = game.add.audio('SoundStrong');
@@ -163,10 +168,19 @@ function play() {
         textInput = textInput.substring(1); // get rid of char at 0
     }
     else { // textInput == "", thus it ran the whole thing
-        if (execButton['pause'] != undefined)
-            execButton['pause'].kill();
-        execButton['play'].reset(280,550);
+        if (autoplayOn == true) {
+            if (pauseText == "")
+                execButtonPressed('next');
+            else
+                execButtonPressed('play'); // resume
+        }
+        else { // autoplay off
+            if (execButton['pause'] != undefined)
+                execButton['pause'].kill();
+            execButton['play'].reset(280,550);
+        }
     }
+    
     window.setTimeout(play, 10000/speed);
 }
 
@@ -213,9 +227,26 @@ function keyClicked(key) {
 }
 
 function execButtonPressed(type) {
+    if (type == 'autoplay') {
+        if (autoplayOn == true) {
+            autoplayOn = false;
+            textDisplay['autoplayOn'].setText('autoplay: off');
+            return;
+        }
+        else if (autoplayOn == false)
+            autoplayOn = true;
+        if (execButton['play'] == undefined) // 'play' if it's not already playing
+            execButtonPressed('play');
+        textDisplay['autoplayOn'].setText('autoplay: on');
+    }
+    
     if (type == 'next') {
         if (repertoireInfo['pos'] < Object.keys(repertoire[repertoireInfo['type']]).length-1)
             repertoireInfo['pos']++; // go get next one unless this is the last one
+        else if (autoplayOn == true) {
+            execButtonPressed('pause');
+            return;
+        }
         
         textInput = repertoire[ repertoireInfo['type'] ][ Object.keys(repertoire[repertoireInfo['type']])[repertoireInfo['pos']] ];
         
@@ -238,6 +269,9 @@ function execButtonPressed(type) {
         execButton['pause'].reset(280,550);
     }
     else if (type == 'pause') {
+        autoplayOn = false;
+        textDisplay['autoplayOn'].setText('autoplay: off');
+        
         pauseText = textInput;
         textInput = "";
         
@@ -245,6 +279,9 @@ function execButtonPressed(type) {
         execButton['play'].reset(280,550);
     }
     else if (type == 'play') {
+        if (repertoireInfo['pos'] == -1)
+            repertoireInfo['pos'] = 0;
+        
         textInput = pauseText;
         pauseText = "";
         
@@ -269,11 +306,4 @@ function speedChange() {
     speed = ((selection['button'].x-selection['bar'].x) / selection['bar'].width) * 200;
     speed = speed.toFixed(2);
     textDisplay['speed'].setText("speed "+speed+"%");
-}
-
-function createRectangle(x, y, w, h) {
-    var sprite = game.add.graphics(x, y);
-    sprite.beginFill(Phaser.Color.getRandomColor(100, 255), 1);
-    sprite.drawRect(0, 0, w, h);
-    return sprite;
 }

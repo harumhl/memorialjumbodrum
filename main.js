@@ -1,4 +1,4 @@
-var game = new Phaser.Game(1000, 1000, Phaser.AUTO, 'MemorialJumboDrum'/*, { preload: preload, create: create, update: update }*/);
+var game = new Phaser.Game(800, 750, Phaser.AUTO, 'MemorialJumboDrum'/*, { preload: preload, create: create, update: update }*/);
 
 game.state.add('selection', selectionState);
 game.state.add('jumbodrum', jumbodrumState);

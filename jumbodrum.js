@@ -110,6 +110,12 @@ create: function()
         sound['side'] = game.add.audio('SoundSide');
         
         /* Keyboard inputs */
+        // controls
+        game.input.keyboard.addKey(Phaser.Keyboard.LEFT).onDown.add(function(){execButtonPressed('prev');}, this);
+        game.input.keyboard.addKey(Phaser.Keyboard.RIGHT).onDown.add(function(){execButtonPressed('next');}, this);
+        game.input.keyboard.addKey(Phaser.Keyboard.UP).onDown.add(function(){execButtonPressed('autoplay');}, this);
+        game.input.keyboard.addKey(Phaser.Keyboard.DOWN).onDown.add(function(){execButtonPressed('rewindPart');}, this);
+        game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR).onDown.add(function(){if(execButton['play'].visible == true) execButtonPressed('play'); else execButtonPressed('pause');}, this);
         // weak
         game.input.keyboard.addKey(Phaser.Keyboard.H).onDown.add(function(){keyClicked('H');}, this);
         game.input.keyboard.addKey(Phaser.Keyboard.G).onDown.add(function(){keyClicked('G');}, this);

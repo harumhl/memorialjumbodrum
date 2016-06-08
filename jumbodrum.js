@@ -104,6 +104,12 @@ create: function()
         textDisplay['speed'] = game.add.text(80,70, "speed 100%", { font: "15px Arial", fill: "#0000ff", align: "center" });
         textDisplay['autoplayOn'] = game.add.text(580, 520, "autoplay: off", { font: "15px Arial", fill: "#0000ff", align: "center" });
         
+        textDisplay['prev'] = game.add.text(180+8, 635, "previous\npart", { font: "15px Arial", fill: "#006600", align: "center" });
+        textDisplay['playpause'] = game.add.text(280, 635, "play/pause", { font: "15px Arial", fill: "#006600", align: "center" });
+        textDisplay['rewindPart'] = game.add.text(380+12, 635, "rewind\nthe part", { font: "15px Arial", fill: "#006600", align: "center" });
+        textDisplay['next'] = game.add.text(480+8, 635, "next part", { font: "15px Arial", fill: "#006600", align: "center" });
+        textDisplay['autoplay'] = game.add.text(580-15, 635, "autoplay\nfrom start till end", { font: "15px Arial", fill: "#006600", align: "center" });
+        
         /* Adding all sounds */
         sound['strong'] = game.add.audio('SoundStrong');
         sound['weak'] = game.add.audio('SoundWeak');

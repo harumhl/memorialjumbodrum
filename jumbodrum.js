@@ -29,6 +29,15 @@ repertoire['SahmChae']= {'1':"j--g--h--f--h--g--j--g--h--f--h--g--j--g--h--f--h-
 repertoire['Hwuimori'] = [];
 
 var textDisplay = [];
+
+var buttonPos = {};
+buttonPos['prev'] = {'x':160, 'y':550};
+buttonPos['next'] = {'x':460, 'y':550};
+buttonPos['play'] = {'x':260, 'y':550};
+buttonPos['pause'] = {'x':260, 'y':550};
+buttonPos['rewindPart'] = {'x':360, 'y':550};
+buttonPos['autoplay'] = {'x':560, 'y':550};
+
 var autoplayOn = false;
 
 // for speed
@@ -66,12 +75,12 @@ create: function()
         
         /* Adding all buttons */
         //styleButton['SahmChae'] = game.add.button(300, 400, 'ButtonStyleSahmChaeKoreanSPRITE', function(){buttonSelected('style','ShamChae');}, this, 0, 1, 2);
-        execButton['next'] = game.add.button(480, 550, 'ButtonNext', function(){execButtonPressed('next');}, this, 0, 1, 2);
-        execButton['prev'] = game.add.button(180, 550, 'ButtonPrev', function(){execButtonPressed('prev');}, this, 0, 1, 2);
-        execButton['play'] = game.add.button(280, 550, 'ButtonPlay', function(){execButtonPressed('play');}, this, 0, 1, 2);
-        execButton['pause'] = game.add.button(280, 550, 'ButtonPause', function(){execButtonPressed('pause');}, this, 0, 1, 2);
-        execButton['rewindPart'] = game.add.button(380, 550, 'ButtonRewindPart', function(){execButtonPressed('rewindPart');}, this, 0, 1, 2); // start over the part
-        execButton['autoplay'] = game.add.button(580, 550, 'ButtonAutoPlay', function(){execButtonPressed('autoplay');}, this, 0, 1, 2); // autoplay from beginning to end
+        execButton['next'] = game.add.button(buttonPos['next'].x, buttonPos['next'].y, 'ButtonNext', function(){execButtonPressed('next');}, this, 0, 1, 2);
+        execButton['prev'] = game.add.button(buttonPos['prev'].x, buttonPos['prev'].y, 'ButtonPrev', function(){execButtonPressed('prev');}, this, 0, 1, 2);
+        execButton['play'] = game.add.button(buttonPos['play'].x, buttonPos['play'].y, 'ButtonPlay', function(){execButtonPressed('play');}, this, 0, 1, 2);
+        execButton['pause'] = game.add.button(buttonPos['pause'].x, buttonPos['pause'].y, 'ButtonPause', function(){execButtonPressed('pause');}, this, 0, 1, 2);
+        execButton['rewindPart'] = game.add.button(buttonPos['rewindPart'].x, buttonPos['rewindPart'].y, 'ButtonRewindPart', function(){execButtonPressed('rewindPart');}, this, 0, 1, 2); // start over the part
+        execButton['autoplay'] = game.add.button(buttonPos['autoplay'].x, buttonPos['autoplay'].y, 'ButtonAutoPlay', function(){execButtonPressed('autoplay');}, this, 0, 1, 2); // autoplay from beginning to end
         
         execButton['next'].scale.setTo(0.3);
         execButton['prev'].scale.setTo(0.3);
@@ -81,8 +90,6 @@ create: function()
         execButton['autoplay'].scale.setTo(0.3);
         
         execButton['pause'].kill();
-        
-        //speedButton['slowest'] = game.add.button(0, 0, 'ButtonSpeedSlowestKorean', function(){buttonSelected('speed','slowest');}, this, 0, 1, 2);
         
         selection['bar'] = game.add.image(15,40,'selection_bar');
         selection['button'] = game.add.button(selection['bar'].width/2+15, 35,'selection_button', speedChange, this, 0);
@@ -102,13 +109,13 @@ create: function()
         textDisplay['type'] = game.add.text(310,20, "SahmChae", { font: "25px Arial", fill: "#000000", align: "center" });
         textDisplay['part'] = game.add.text(350,50, "part 1", { font: "15px Arial", fill: "#ff0044", align: "center" });
         textDisplay['speed'] = game.add.text(80,70, "speed 100%", { font: "15px Arial", fill: "#0000ff", align: "center" });
-        textDisplay['autoplayOn'] = game.add.text(580, 520, "autoplay: off", { font: "15px Arial", fill: "#0000ff", align: "center" });
+        textDisplay['autoplayOn'] = game.add.text(buttonPos['autoplay'].x, buttonPos['autoplay'].y -30, "autoplay: off", { font: "15px Arial", fill: "#0000ff", align: "center" });
         
-        textDisplay['prev'] = game.add.text(180+8, 635, "previous\npart", { font: "15px Arial", fill: "#006600", align: "center" });
-        textDisplay['playpause'] = game.add.text(280, 635, "play/pause", { font: "15px Arial", fill: "#006600", align: "center" });
-        textDisplay['rewindPart'] = game.add.text(380+12, 635, "rewind\nthe part", { font: "15px Arial", fill: "#006600", align: "center" });
-        textDisplay['next'] = game.add.text(480+8, 635, "next part", { font: "15px Arial", fill: "#006600", align: "center" });
-        textDisplay['autoplay'] = game.add.text(580-15, 635, "autoplay\nfrom start till end", { font: "15px Arial", fill: "#006600", align: "center" });
+        textDisplay['prev'] = game.add.text(buttonPos['prev'].x+8, buttonPos['prev'].y+85, "previous\npart", { font: "15px Arial", fill: "#006600", align: "center" });
+        textDisplay['playpause'] = game.add.text(buttonPos['play'].x, buttonPos['play'].y+85, "play/pause", { font: "15px Arial", fill: "#006600", align: "center" });
+        textDisplay['rewindPart'] = game.add.text(buttonPos['rewindPart'].x+12, buttonPos['rewindPart'].y+85, "rewind\nthe part", { font: "15px Arial", fill: "#006600", align: "center" });
+        textDisplay['next'] = game.add.text(buttonPos['next'].x+8, buttonPos['next'].y+85, "next part", { font: "15px Arial", fill: "#006600", align: "center" });
+        textDisplay['autoplay'] = game.add.text(buttonPos['autoplay'].x-15, buttonPos['autoplay'].y+85, "autoplay\nfrom start till end", { font: "15px Arial", fill: "#006600", align: "center" });
         
         /* Adding all sounds */
         sound['strong'] = game.add.audio('SoundStrong');
@@ -189,7 +196,7 @@ function play() {
         else { // autoplay off
             if (execButton['pause'] != undefined)
                 execButton['pause'].kill();
-            execButton['play'].reset(280,550);
+            execButton['play'].reset(buttonPos['play'].x, buttonPos['play'].y);
         }
     }
     
@@ -266,7 +273,7 @@ function execButtonPressed(type) {
         
         if (execButton['play'] != undefined)
             execButton['play'].kill();
-        execButton['pause'].reset(280,550);
+        execButton['pause'].reset(buttonPos['pause'].x, buttonPos['pause'].y);
     }
     else if (type == 'prev') {
         if (0 < repertoireInfo['pos']) // go get previous one unless it's already the first one
@@ -278,7 +285,7 @@ function execButtonPressed(type) {
         
         if (execButton['play'] != undefined)
             execButton['play'].kill();
-        execButton['pause'].reset(280,550);
+        execButton['pause'].reset(buttonPos['pause'].x, buttonPos['pause'].y);
     }
     else if (type == 'pause') {
         autoplayOn = false;
@@ -288,7 +295,7 @@ function execButtonPressed(type) {
         textInput = "";
         
         execButton['pause'].kill();
-        execButton['play'].reset(280,550);
+        execButton['play'].reset(buttonPos['play'].x, buttonPos['play'].y);
     }
     else if (type == 'play') {
         if (repertoireInfo['pos'] == -1)
@@ -302,14 +309,14 @@ function execButtonPressed(type) {
             textInput = repertoire[ repertoireInfo['type'] ][ Object.keys(repertoire[repertoireInfo['type']])[repertoireInfo['pos']] ];
         
         execButton['play'].kill();
-        execButton['pause'].reset(280,550);
+        execButton['pause'].reset(buttonPos['pause'].x, buttonPos['pause'].y);
     }
     else if (type == 'rewindPart') {
         textInput = repertoire[ repertoireInfo['type'] ][ Object.keys(repertoire[repertoireInfo['type']])[repertoireInfo['pos']] ];
         
         if (execButton['play'] != undefined)
             execButton['play'].kill();
-        execButton['pause'].reset(280,550);
+        execButton['pause'].reset(buttonPos['pause'].x, buttonPos['pause'].y);
     }
 }
 
